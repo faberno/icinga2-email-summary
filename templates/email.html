@@ -1,0 +1,59 @@
+<html>
+    <head>
+        <style>
+            table {
+                width: 100%;
+            }
+
+            td, th {
+                height: 50px;
+            }
+
+            td.statefield {
+                width: 100px;
+                text-align: center;
+                vertical-align: middle;
+                color:#6E2E40;
+                border-radius: 5px;
+            }
+        </style>
+    </head>
+<body>
+<table>
+
+    {% for host in hosts %}
+        <tr>
+            <td class="statefield" style="background-color:{{host_colors[host.state]}}">{{host_states[host.state]}}<br><span style="font-size: 11px">since {{host.change_time_str}}</span></td>
+            <td><b>{{host.name}}</b><br><span style="font-size: 13px">{{host.address}}</span>{% if (host.state > 1 and host.output) %}<br><span style="font-size: 11px">{{host.output}}</span>{% endif %}</td>
+        </tr>
+
+        {% if host.services|length > 0 %}
+        <tr >
+            <td style="width: 100px;background-color:#FFFFFF;"></td>
+            <td>
+                <table>
+                    {% for service in host.services %}
+                        <tr>
+                            <td class="statefield" style="background-color:{{service_colors[service.state]}};">
+                                {{service_states[service.state]}}<br><span style="font-size: 11px">since {{service.change_time_str}}</span></td>
+                            <td><b>{{service.name}}</b><br><span style="font-size: 11px">{{service.output}}</span></td>
+                        </tr>
+                    {% endfor %}
+            </table>
+
+            </td>
+
+
+        </tr>
+        {% endif %}
+        <tr>
+            <td style="height: 30px"></td>
+
+        </tr>
+    {% endfor %}
+
+</table>
+
+
+</body>
+</html>

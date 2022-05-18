@@ -1,0 +1,27 @@
+import logging
+
+send_mail = False  # debug variable to not accidentally send emails
+
+# icinga config
+icinga_host = ''
+icinga_apiuser = ''
+icinga_apipassword = ''
+
+host_colors = {0: "#44BB77",
+               1: "#44BB77",
+               2: "#FF5566",
+               3: "#FF5566"}
+
+service_colors = {0: "#44BB77",
+                  1: "#FFAA44",
+                  2: "#FF5566",
+                  3: "#CC77FF"}
+
+# email config
+smtp_host = 'localhost'
+from_addr = ''
+
+# log config
+log_file = 'summary.log'
+log_format = '%(asctime)s - %(levelname)s - %(message)s'
+log_level = logging.DEBUG
