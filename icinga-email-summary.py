@@ -1,5 +1,7 @@
-from config import (send_mail, icinga_host, icinga_apiuser, icinga_apipassword, host_colors,
-                    service_colors, smtp_host, from_addr, log_file, log_format, log_level)
+from config import (send_mail, icinga_host, icinga_apiuser, icinga_apipassword,
+                    host_colors, service_colors, from_addr, smtp_host,
+                    smtp_port, smtp_username, smtp_password, log_file,
+                    log_format, log_level)
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -63,7 +65,9 @@ mail_template = env.get_template('email.html')
 
 # set up smtp connection and message
 if send_mail:
-    smtp = smtplib.SMTP(smtp_host)
+    smtp = smtplib.SMTP(smtp_host, smtp_port)
+    if smtp_username and smtp_password:
+        smtp.login(smtp_username, smtp_password)
 msg = MIMEMultipart('alternative')
 msg['Subject'] = "Icinga Summary"
 msg['From'] = from_addr

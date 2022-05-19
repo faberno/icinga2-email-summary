@@ -7,6 +7,13 @@ icinga_host = ''
 icinga_apiuser = ''
 icinga_apipassword = ''
 
+# email config
+from_addr = ''
+smtp_host = 'localhost'
+smtp_port = 0
+smtp_username = ''
+smtp_password = ''
+
 host_colors = {0: "#44BB77",
                1: "#44BB77",
                2: "#FF5566",
@@ -16,10 +23,6 @@ service_colors = {0: "#44BB77",
                   1: "#FFAA44",
                   2: "#FF5566",
                   3: "#CC77FF"}
-
-# email config
-smtp_host = 'localhost'
-from_addr = ''
 
 # log config
 log_file = 'summary.log'
