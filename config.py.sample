@@ -8,6 +8,7 @@ icinga_apiuser = ''
 icinga_apipassword = ''
 
 # email config
+subject = ''
 from_addr = ''
 smtp_host = 'localhost'
 smtp_port = 0
