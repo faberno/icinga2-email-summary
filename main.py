@@ -169,7 +169,7 @@ def assign_hosts_to_users(problem_hosts, users):
     return user_notifications
 
 
-def send_emails(smtp, user_notifications, mail_template, msg):
+def send_emails(smtp, user_notifications, mail_template):
     """Creates the email body from the template and sends it."""
     whitelist = []
     with open('whitelist.txt', 'r') as f:
@@ -179,6 +179,9 @@ def send_emails(smtp, user_notifications, mail_template, msg):
     for mail_address, host_list in user_notifications.items():
         if mail_address in whitelist:
             try:
+                msg = MIMEMultipart('alternative')
+                msg['Subject'] = subject
+                msg['From'] = from_addr
                 msg['To'] = mail_address
                 msg_body = mail_template.render(hosts=host_list,
                                                 host_colors=host_colors,
@@ -199,15 +202,11 @@ def main():
         if smtp_username and smtp_password:
             smtp.login(smtp_username, smtp_password)
 
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = subject
-        msg['From'] = from_addr
-
         users, hosts, services = retrieve_and_clean_api_data(icinga2_client)
         problem_hosts = assign_services_to_hosts(services, hosts)
         user_notifications = assign_hosts_to_users(problem_hosts, users)
 
-        send_emails(smtp, user_notifications, mail_template, msg)
+        send_emails(smtp, user_notifications, mail_template)
 
 
 if __name__ == "__main__":
