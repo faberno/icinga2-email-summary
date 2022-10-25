@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from config import (send_mail, icinga_host, icinga_apiuser, icinga_apipassword,
                     host_colors, service_colors, subject, from_addr, smtp_host,
                     smtp_port, smtp_username, smtp_password, log_file,
@@ -10,6 +12,18 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 import logging
 import os
 from smtplib import SMTP
+
+
+host_states = {0: "UP",
+               1: "UP",
+               2: "DOWN",
+               3: "DOWN"}
+
+
+service_states = {0: "OK",
+                  1: "WARNING",
+                  2: "CRITICAL",
+                  3: "UNKNOWN"}
 
 
 def notifications_recipients(host):
@@ -25,18 +39,6 @@ def timestamp2str(timestamp):
     time = datetime.fromtimestamp(timestamp)
     time_format = "%H:%M" if time.date() == datetime.today().date() else "%d-%b-%y"
     return time.strftime(time_format)
-
-
-host_states = {0: "UP",
-               1: "UP",
-               2: "DOWN",
-               3: "DOWN"}
-
-
-service_states = {0: "OK",
-                  1: "WARNING",
-                  2: "CRITICAL",
-                  3: "UNKNOWN"}
 
 
 def setup():
@@ -163,22 +165,31 @@ def assign_hosts_to_users(problem_hosts, users):
     return user_notifications
 
 
-def send_emails(smtp, user_notifications, mail_template, msg):
+def send_emails(smtp, user_notifications, mail_template):
     """Creates the email body from the template and sends it."""
-    for mail_address, host_list in user_notifications.items():
-        try:
-            msg['To'] = mail_address
-            msg_body = mail_template.render(hosts=host_list,
-                                            host_colors=host_colors,
-                                            service_colors=service_colors,
-                                            host_states=host_states,
-                                            service_states=service_states)
-            msg.attach(MIMEText(msg_body, 'html'))
+    whitelist = []
+    with open('whitelist.txt', 'r') as f:
+        for line in f:
+            whitelist.append(line.rstrip('\n'))
 
-            if send_mail:
-                smtp.sendmail(from_addr, mail_address, msg.as_string())
-        except Exception:
-            logging.exception(f'Could not send email to {mail_address}')
+    for mail_address, host_list in user_notifications.items():
+        if mail_address in whitelist:
+            try:
+                msg = MIMEMultipart('alternative')
+                msg['Subject'] = subject
+                msg['From'] = from_addr
+                msg['To'] = mail_address
+                msg_body = mail_template.render(hosts=host_list,
+                                                host_colors=host_colors,
+                                                service_colors=service_colors,
+                                                host_states=host_states,
+                                                service_states=service_states)
+                msg.attach(MIMEText(msg_body, 'html'))
+
+                if send_mail:
+                    smtp.sendmail(from_addr, mail_address, msg.as_string())
+            except Exception:
+                logging.exception(f'Could not send email to {mail_address}')
 
 
 def main():
@@ -187,15 +198,11 @@ def main():
         if smtp_username and smtp_password:
             smtp.login(smtp_username, smtp_password)
 
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = subject
-        msg['From'] = from_addr
-
         users, hosts, services = retrieve_and_clean_api_data(icinga2_client)
         problem_hosts = assign_services_to_hosts(services, hosts)
         user_notifications = assign_hosts_to_users(problem_hosts, users)
 
-        send_emails(smtp, user_notifications, mail_template, msg)
+        send_emails(smtp, user_notifications, mail_template)
 
 
 if __name__ == "__main__":
