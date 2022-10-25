@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from config import (send_mail, icinga_host, icinga_apiuser, icinga_apipassword,
                     host_colors, service_colors, subject, from_addr, smtp_host,
                     smtp_port, smtp_username, smtp_password, log_file,
@@ -135,6 +137,10 @@ def assign_services_to_hosts(services, hosts):
         # if host does not exist yet in host_problems, create a new one and add the service
         problem_hosts.setdefault(service_info['host_name'], default_host)[
             'services'].append(service)
+        host = problem_hosts[service_info['host_name']]
+        if service['name'] in ['Referenzquery: Ergebniszahl', 'Reference query: result count'] and service['state'] > host['state']:
+            host['state'] = service['state']
+            host['change_time_str'] = service['change_time_str']
 
     problem_hosts = list(problem_hosts.values())
     problem_hosts = sorted(problem_hosts, key=sorting, reverse=True)
@@ -165,20 +171,26 @@ def assign_hosts_to_users(problem_hosts, users):
 
 def send_emails(smtp, user_notifications, mail_template, msg):
     """Creates the email body from the template and sends it."""
-    for mail_address, host_list in user_notifications.items():
-        try:
-            msg['To'] = mail_address
-            msg_body = mail_template.render(hosts=host_list,
-                                            host_colors=host_colors,
-                                            service_colors=service_colors,
-                                            host_states=host_states,
-                                            service_states=service_states)
-            msg.attach(MIMEText(msg_body, 'html'))
+    whitelist = []
+    with open('whitelist.txt', 'r') as f:
+        for line in f:
+            whitelist.append(line.rstrip('\n'))
 
-            if send_mail:
-                smtp.sendmail(from_addr, mail_address, msg.as_string())
-        except Exception:
-            logging.exception(f'Could not send email to {mail_address}')
+    for mail_address, host_list in user_notifications.items():
+        if mail_address in whitelist:
+            try:
+                msg['To'] = mail_address
+                msg_body = mail_template.render(hosts=host_list,
+                                                host_colors=host_colors,
+                                                service_colors=service_colors,
+                                                host_states=host_states,
+                                                service_states=service_states)
+                msg.attach(MIMEText(msg_body, 'html'))
+
+                if send_mail:
+                    smtp.sendmail(from_addr, mail_address, msg.as_string())
+            except Exception:
+                logging.exception(f'Could not send email to {mail_address}')
 
 
 def main():
