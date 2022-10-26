@@ -169,28 +169,31 @@ def assign_hosts_to_users(problem_hosts, users):
 def send_emails(smtp, user_notifications, mail_template):
     """Creates the email body from the template and sends it."""
     whitelist = []
-    with open('whitelist.txt', 'r') as f:
-        for line in f:
-            whitelist.append(line.rstrip('\n'))
+    if use_whitelist:
+        with open('whitelist.txt', 'r') as f:
+            for line in f:
+                whitelist.append(line.rstrip('\n'))
 
     for mail_address, host_list in user_notifications.items():
-        if mail_address in whitelist:
-            try:
-                msg = MIMEMultipart('alternative')
-                msg['Subject'] = subject
-                msg['From'] = from_addr
-                msg['To'] = mail_address
-                msg_body = mail_template.render(hosts=host_list,
-                                                host_colors=host_colors,
-                                                service_colors=service_colors,
-                                                host_states=host_states,
-                                                service_states=service_states)
-                msg.attach(MIMEText(msg_body, 'html'))
+        if use_whitelist and mail_address not in whitelist:
+            continue
 
-                if send_mail:
-                    smtp.sendmail(from_addr, mail_address, msg.as_string())
-            except Exception:
-                logging.exception(f'Could not send email to {mail_address}')
+        try:
+            msg = MIMEMultipart('alternative')
+            msg['Subject'] = subject
+            msg['From'] = from_addr
+            msg['To'] = mail_address
+            msg_body = mail_template.render(hosts=host_list,
+                                            host_colors=host_colors,
+                                            service_colors=service_colors,
+                                            host_states=host_states,
+                                            service_states=service_states)
+            msg.attach(MIMEText(msg_body, 'html'))
+
+            if send_mail:
+                smtp.sendmail(from_addr, mail_address, msg.as_string())
+        except Exception:
+            logging.exception(f'Could not send email to {mail_address}')
 
 
 def main():
