@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 
-from config import (send_mail, icinga_host, icinga_apiuser, icinga_apipassword,
-                    host_colors, service_colors, subject, from_addr, smtp_host,
-                    smtp_port, smtp_username, smtp_password, log_file,
-                    log_format, log_level)
+import logging
+import os
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from icinga2apic.client import Client
-from jinja2 import Environment, FileSystemLoader, select_autoescape
-import logging
-import os
 from smtplib import SMTP
 
+from icinga2apic.client import Client
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+from config import (from_addr, host_colors, icinga_apipassword, icinga_apiuser,
+                    icinga_host, log_file, log_format, log_level, send_mail,
+                    service_colors, smtp_host, smtp_password, smtp_port,
+                    smtp_username, subject, use_whitelist)
 
 host_states = {0: "UP",
                1: "UP",
