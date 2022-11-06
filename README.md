@@ -15,7 +15,13 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
+    <li>
+      <a href="#usage">Usage</a>
+      <ul>
+        <li><a href="#configuration">Configuration</a></li>
+        <li><a href="#execution">Execution</a></li>
+      </ul>
+    </li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
@@ -58,22 +64,22 @@ pip install -r requirements.txt
 Rename config.py.sample to config.py and configure it to your needs
 * send_mail (boolean): If false, no emails will be sent (recommended for testing)
 * use_whitelist (boolean): If true, only addresses that have been specified in the whitelist.txt can receive emails (recommended for testing).  
-whitelist.txt should contain one address per row.
+whitelist.txt should contain one address per row
 ```text
 user1@example.com
 user2@example.com
 ```
-* <strong>icinga_host</strong> (string): URL of the Icinga2 host.
-* <strong>icinga_apiuser</strong> (string): Name of API User, which the client will use. Ideally, this user should have read rights only.
-* <strong>icinga_apipassword</strong> (string): Password of the API User.
-* <strong>subject</strong> (string): The subject of the sent emails.
-* <strong>from_addr</strong> (string): The email address the messages are sent from.
-* <strong>smtp_host</strong> (string): URL of the SMTP server ('localhost' if on the same server).
-* <strong>smtp_port</strong> (integer): Port of the SMTP host (0 if host is 'localhost').: Username for the SMTP server (not needed if running )
+* <strong>icinga_host</strong> (string): URL of the Icinga2 host
+* <strong>icinga_apiuser</strong> (string): Name of API User, which the client will use. Ideally, this user should have read rights only
+* <strong>icinga_apipassword</strong> (string): Password of the API User
+* <strong>subject</strong> (string): The subject of the sent emails
+* <strong>from_addr</strong> (string): The email address the messages are sent from
+* <strong>smtp_host</strong> (string): URL of the SMTP server ('localhost' if on the same server)
+* <strong>smtp_port</strong> (integer): Port of the SMTP host (0 if host is 'localhost').: Username for the SMTP server (not needed if running)
 * <strong>smtp_username</strong> & <strong>smtp_password</strong> (string): Credentials of the SMTP user (not needed íf this script runs on the SMTP server)
-* <strong>log_file</strong> (string): Path to the log file.
+* <strong>log_file</strong> (string): Path to the log file
 * <strong>log_format</strong> (string): Formatting of the log messages (see [here](https://docs.python.org/3/library/logging.html#logrecord-attributes) for details)
-* <strong>log_level</strong> (level): [Logging level](https://docs.python.org/3/library/logging.html#logging-levels) provided by the built-in logging library.
+* <strong>log_level</strong> (logging.{level}): [Logging level](https://docs.python.org/3/library/logging.html#logging-levels) provided by the built-in logging library
 
 As can be seen above, it makes sense to have Icinga, SMTP and this script running on the same machine.
 
