@@ -75,7 +75,7 @@ user2@example.com
 * <strong>subject</strong> (string): The subject of the sent emails
 * <strong>from_addr</strong> (string): The email address the messages are sent from
 * <strong>smtp_host</strong> (string): URL of the SMTP server ('localhost' if on the same server)
-* <strong>smtp_port</strong> (integer): Port of the SMTP host (0 if host is 'localhost').: Username for the SMTP server (not needed if running)
+* <strong>smtp_port</strong> (integer): Port of the SMTP host (0 if host is 'localhost')
 * <strong>smtp_username</strong> & <strong>smtp_password</strong> (string): Credentials of the SMTP user (not needed íf this script runs on the SMTP server)
 * <strong>log_file</strong> (string): Path to the log file
 * <strong>log_format</strong> (string): Formatting of the log messages (see [here](https://docs.python.org/3/library/logging.html#logrecord-attributes) for details)
