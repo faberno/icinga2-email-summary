@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
-import os
+from os import path
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -26,6 +26,7 @@ service_states = {0: "OK",
                   2: "CRITICAL",
                   3: "UNKNOWN"}
 
+root = path.dirname(path.abspath(__file__))
 
 def notifications_recipients(host):
     """Retrieve all users of a host, that want to receive emails"""
@@ -52,8 +53,7 @@ def setup():
     client = Client(icinga_host, icinga_apiuser, icinga_apipassword)
 
     # set up jinja2 template
-    root = os.path.dirname(os.path.abspath(__file__))
-    templates_dir = os.path.join(root, 'templates')
+    templates_dir = path.join(root, 'templates')
     env = Environment(
         loader=FileSystemLoader(templates_dir),
         autoescape=select_autoescape()
@@ -170,7 +170,8 @@ def send_emails(smtp, user_notifications, mail_template):
     """Creates the email body from the template and sends it."""
     whitelist = []
     if use_whitelist:
-        with open('whitelist.txt', 'r') as f:
+        whitelist_path = path.join(root, 'whitelist.txt')
+        with open(whitelist_path, 'r') as f:
             for line in f:
                 whitelist.append(line.rstrip('\n'))
 
