@@ -1,6 +1,7 @@
 import logging
 
 send_mail = False  # debug variable to not accidentally send emails
+use_allowlist = False  # only send emails to recipients specified in whitelist.txt
 
 # icinga config
 icinga_host = ''
