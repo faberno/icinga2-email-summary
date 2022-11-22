@@ -13,7 +13,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from config import (from_addr, host_colors, icinga_apipassword, icinga_apiuser,
                     icinga_host, log_file, log_format, log_level, send_mail,
                     service_colors, smtp_host, smtp_password, smtp_port,
-                    smtp_username, subject, use_whitelist)
+                    smtp_username, subject, use_allowlist)
 
 host_states = {0: "UP",
                1: "UP",
@@ -172,15 +172,15 @@ def assign_hosts_to_users(problem_hosts, users):
 
 def send_emails(smtp, user_notifications, mail_template):
     """Creates the email body from the template and sends it."""
-    whitelist = []
-    if use_whitelist:
-        whitelist_path = path.join(root, 'whitelist.txt')
-        with open(whitelist_path, 'r') as f:
+    allowlist = []
+    if use_allowlist:
+        allowlist_path = path.join(root, 'allowlist.txt')
+        with open(allowlist_path, 'r') as f:
             for line in f:
-                whitelist.append(line.rstrip('\n'))
+                allowlist.append(line.rstrip('\n'))
 
     for mail_address, host_list in user_notifications.items():
-        if use_whitelist and mail_address not in whitelist:
+        if use_allowlist and mail_address not in allowlist:
             continue
 
         try:
