@@ -7,6 +7,9 @@ icinga_host = ''
 icinga_apiuser = ''
 icinga_apipassword = ''
 
+# whitelist config, full path to whitelist-file
+use_whitelist = ''
+
 # email config
 subject = ''
 from_addr = ''
